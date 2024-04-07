@@ -4,18 +4,19 @@ import {
   ToolFactory,
   ContextChatEngine,
   LLM,
+  BaseEmbedding,
 } from "llamaindex";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { getDataSource } from "./index";
 import { STORAGE_CACHE_DIR } from "./shared";
 
-export async function createChatEngine(llm: LLM) {
+export async function createChatEngine(llm: LLM, embedding: BaseEmbedding) {
   let tools: BaseTool[] = [];
 
   // Add a query engine tool if we have a data source
   // Delete this code if you don't have a data source
-  const index = await getDataSource(llm);
+  const index = await getDataSource(llm, embedding);
   if (index) {
     tools.push(
       new QueryEngineTool({

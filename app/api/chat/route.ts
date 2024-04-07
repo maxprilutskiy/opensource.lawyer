@@ -4,7 +4,7 @@ import { ChatMessage, Groq, MessageContent, OpenAI } from "llamaindex";
 import { NextRequest, NextResponse } from "next/server";
 import { createChatEngine } from "./engine/chat";
 import { LlamaIndexStream } from "./llamaindex-stream";
-import { createLLM } from "./engine/llm";
+import { createEmbeddingsModel, createModel } from "./engine/llm";
 
 initObservability();
 
@@ -45,8 +45,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const llm = createLLM();
-    const chatEngine = await createChatEngine(llm);
+    const llm = createModel();
+    const embedModel = createEmbeddingsModel();
+    const chatEngine = await createChatEngine(llm, embedModel);
 
     // Convert message content from Vercel/AI format to LlamaIndex/OpenAI format
     const userMessageContent = convertMessageContent(

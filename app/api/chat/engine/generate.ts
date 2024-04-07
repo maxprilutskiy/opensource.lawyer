@@ -3,14 +3,16 @@ import {
   serviceContextFromDefaults,
   storageContextFromDefaults,
   VectorStoreIndex,
-  TogetherLLM,
+  Settings,
+  TogetherEmbedding,
+  SimpleVectorStore,
 } from "llamaindex";
 
 import * as dotenv from "dotenv";
 
 import { getDocuments } from "./loader";
 import { CHUNK_OVERLAP, CHUNK_SIZE, STORAGE_CACHE_DIR } from "./shared";
-import { createLLM } from "./llm";
+import { createEmbeddingsModel, createModel } from "./llm";
 
 // Load environment variables from local .env file
 dotenv.config();
@@ -26,25 +28,28 @@ async function generateDatasource(serviceContext: ServiceContext) {
   console.log(`Generating storage context...`);
   // Split documents, create embeddings and store them in the storage context
   const ms = await getRuntime(async () => {
+    const documents = await getDocuments();
     const storageContext = await storageContextFromDefaults({
       persistDir: STORAGE_CACHE_DIR,
     });
-    const documents = await getDocuments();
-    await VectorStoreIndex.fromDocuments(documents, {
-      storageContext,
+    const vsi = await VectorStoreIndex.fromDocuments(documents, {
+      logProgress: true,
       serviceContext,
+      storageContext,
     });
   });
   console.log(`Storage context successfully generated in ${ms / 1000}s.`);
 }
 
 (async () => {
-  const llm = createLLM();
+  const llm = createModel();
+  const embeddingsLLM = createEmbeddingsModel();
 
   const serviceContext = serviceContextFromDefaults({
     chunkSize: CHUNK_SIZE,
     chunkOverlap: CHUNK_OVERLAP,
     llm,
+    embedModel: embeddingsLLM,
   });
 
   await generateDatasource(serviceContext);
