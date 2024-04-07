@@ -54,6 +54,14 @@ export async function POST(request: NextRequest) {
       model: process.env.MODEL,
     });
 
+    // const llm = new OpenAI({
+    //   azure: {
+    //     apiKey: process.env.GROQ_API_KEY,
+    //     endpoint: `https://api.groq.com/openai/v1`,
+    //   },
+    //   model: process.env.MODEL,
+    // });
+
     const chatEngine = await createChatEngine(llm);
 
     // Convert message content from Vercel/AI format to LlamaIndex/OpenAI format

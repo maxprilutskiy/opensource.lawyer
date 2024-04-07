@@ -1,10 +1,9 @@
 import {
   BaseTool,
   Groq,
-  OpenAI,
-  OpenAIAgent,
   QueryEngineTool,
   ToolFactory,
+  ContextChatEngine
 } from "llamaindex";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -37,9 +36,11 @@ export async function createChatEngine(llm: Groq) {
     tools = tools.concat(await ToolFactory.createTools(config));
   } catch {}
 
-  return new OpenAIAgent({
-    tools,
-    llm,
-    verbose: true,
+  return new ContextChatEngine({
+    retriever: null as any,
+    contextSystemPrompt({ context }) {
+      return context || '';
+    },
+    chatModel: llm,
   });
 }
