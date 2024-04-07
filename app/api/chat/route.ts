@@ -1,10 +1,12 @@
 import { initObservability } from "@/app/observability";
 import { StreamingTextResponse } from "ai";
-import { ChatMessage, Groq, MessageContent, OpenAI } from "llamaindex";
+import { ChatMessage, Groq, MessageContent, VectorStoreIndex, serviceContextFromDefaults, storageContextFromDefaults } from "llamaindex";
 import { NextRequest, NextResponse } from "next/server";
 import { createChatEngine } from "./engine/chat";
 import { LlamaIndexStream } from "./llamaindex-stream";
 import { createEmbeddingsModel, createModel } from "./engine/llm";
+import { getDocuments } from "./engine/loader";
+import { CHUNK_OVERLAP, CHUNK_SIZE } from "./engine/shared";
 
 initObservability();
 
@@ -47,7 +49,29 @@ export async function POST(request: NextRequest) {
 
     const llm = createModel();
     const embedModel = createEmbeddingsModel();
-    const chatEngine = await createChatEngine(llm, embedModel);
+    const docs = await getDocuments();
+    console.log("[LlamaIndex] Loaded documents", docs.length);
+    const serviceContext = serviceContextFromDefaults({
+      llm,
+      embedModel,
+      chunkSize: CHUNK_SIZE,
+      chunkOverlap: CHUNK_OVERLAP,
+    });
+    const storageContext = await storageContextFromDefaults({
+
+    });
+    console.log("[LlamaIndex] Created serviceContext");
+    const vsi = await VectorStoreIndex.fromDocuments(docs, {
+      serviceContext,
+      storageContext,
+    });
+    console.log("[LlamaIndex] Loaded VectorStoreIndex");
+    const chatEngine = await createChatEngine(
+      llm,
+      embedModel,
+      vsi,
+    );
+    console.log("[LlamaIndex] Created ChatEngine");
 
     // Convert message content from Vercel/AI format to LlamaIndex/OpenAI format
     const userMessageContent = convertMessageContent(
