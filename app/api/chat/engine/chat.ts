@@ -1,5 +1,6 @@
 import {
   BaseTool,
+  Groq,
   OpenAI,
   OpenAIAgent,
   QueryEngineTool,
@@ -10,7 +11,7 @@ import path from "node:path";
 import { getDataSource } from "./index";
 import { STORAGE_CACHE_DIR } from "./shared";
 
-export async function createChatEngine(llm: OpenAI) {
+export async function createChatEngine(llm: Groq) {
   let tools: BaseTool[] = [];
 
   // Add a query engine tool if we have a data source
