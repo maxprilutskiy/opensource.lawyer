@@ -2,7 +2,7 @@ import { Document } from "llamaindex";
 
 export const DATA_DIR = "./data";
 
-const remoteLocation = 'https://github.com/maxprilutskiy/oss-license/blob/main/data';
+const remoteLocation = 'https://github.com/maxprilutskiy/opensource.lawyer/blob/main/data';
 const licenseIds = [
   'mit',
   'agpl',
