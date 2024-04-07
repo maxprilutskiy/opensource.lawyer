@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
     });
     console.log("[LlamaIndex] Created serviceContext");
     const vsi = await VectorStoreIndex.fromDocuments(docs, {
+      logProgress: true,
       serviceContext,
       storageContext,
     });
