@@ -4,6 +4,7 @@
   "scripts": {
     "format": "prettier --ignore-unknown --cache --check .",
     "format:write": "prettier --ignore-unknown --write .",
+    "generate": "ts-node ./app/api/chat/engine/generate.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

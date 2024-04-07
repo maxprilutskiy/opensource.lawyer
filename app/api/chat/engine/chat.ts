@@ -1,16 +1,16 @@
 import {
   BaseTool,
-  Groq,
   QueryEngineTool,
   ToolFactory,
-  ContextChatEngine
+  ContextChatEngine,
+  LLM,
 } from "llamaindex";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { getDataSource } from "./index";
 import { STORAGE_CACHE_DIR } from "./shared";
 
-export async function createChatEngine(llm: Groq) {
+export async function createChatEngine(llm: LLM) {
   let tools: BaseTool[] = [];
 
   // Add a query engine tool if we have a data source

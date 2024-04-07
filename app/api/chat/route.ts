@@ -4,6 +4,7 @@ import { ChatMessage, Groq, MessageContent, OpenAI } from "llamaindex";
 import { NextRequest, NextResponse } from "next/server";
 import { createChatEngine } from "./engine/chat";
 import { LlamaIndexStream } from "./llamaindex-stream";
+import { createLLM } from "./engine/llm";
 
 initObservability();
 
@@ -44,24 +45,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    /*const llm = new OpenAI({
-      model: (process.env.MODEL as any) ?? "gpt-3.5-turbo",
-      maxTokens: 512,
-    });*/
-
-    const llm = new Groq({
-      apiKey: process.env.GROQ_API_KEY,
-      model: process.env.MODEL,
-    });
-
-    // const llm = new OpenAI({
-    //   azure: {
-    //     apiKey: process.env.GROQ_API_KEY,
-    //     endpoint: `https://api.groq.com/openai/v1`,
-    //   },
-    //   model: process.env.MODEL,
-    // });
-
+    const llm = createLLM();
     const chatEngine = await createChatEngine(llm);
 
     // Convert message content from Vercel/AI format to LlamaIndex/OpenAI format

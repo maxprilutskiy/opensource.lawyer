@@ -3,12 +3,14 @@ import {
   serviceContextFromDefaults,
   storageContextFromDefaults,
   VectorStoreIndex,
+  TogetherLLM,
 } from "llamaindex";
 
 import * as dotenv from "dotenv";
 
 import { getDocuments } from "./loader";
 import { CHUNK_OVERLAP, CHUNK_SIZE, STORAGE_CACHE_DIR } from "./shared";
+import { createLLM } from "./llm";
 
 // Load environment variables from local .env file
 dotenv.config();
@@ -37,9 +39,12 @@ async function generateDatasource(serviceContext: ServiceContext) {
 }
 
 (async () => {
+  const llm = createLLM();
+
   const serviceContext = serviceContextFromDefaults({
     chunkSize: CHUNK_SIZE,
     chunkOverlap: CHUNK_OVERLAP,
+    llm,
   });
 
   await generateDatasource(serviceContext);
